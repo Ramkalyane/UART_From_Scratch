@@ -9,8 +9,33 @@ UART_HandleTypeDef huart2;
 int main(void)
 {
 	HAL_Init(); // Hardware init
-
 	SystemClockConfig();
+	UART2_Init();
+
+
+	
+	char *send_data = "Hello - world\n";
+
+	HAL_UART_Transmit(&huart2, (uint8_t *)send_data, strlen(send_data), HAL_MAX_DELAY);
+	uint8_t read_data;
+	uint16_t buffer[10];
+	uint16_t count = 0;
+
+	while(1)
+	{
+		HAL_UART_Receive(&huart2, &read_data, 1, HAL_MAX_DELAY);
+
+		if(read_data == '\r')
+		{
+			HAL_UART_Transmit(&huart2, (uint8_t *)send_data, strlen(send_data), HAL_MAX_DELAY);
+		}
+		else
+		{
+			buffer[count++] = read_data;
+		}
+	}
+
+	return 0;
 }
 
 
